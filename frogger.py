@@ -59,12 +59,22 @@ class Car(pygame.sprite.Sprite):
 		#self.image = pygame.image.load("car.png").convert()
 		self.image.set_colorkey(WHITE)
 		self.rect = self.image.get_rect()
+	def moveRight(self,speed):
+		self.rect.x += speed
+	def moveLeft(self,speed):
+		self.rect.x -= speed
 
 #create frog sprite
 frog1 = Frog(RED,20,30)
 frog1.rect.x = 200
 frog1.rect.y = 300
 list_of_sprites.add(frog1)
+
+#create base car sprite
+car1 = Car(BLACK,20,30)
+car1.rect.x = 50
+car1.rect.y = 150
+list_of_sprites.add(car1)
 
 #Main program Loop
 while not done:
@@ -75,6 +85,7 @@ while not done:
 		elif event.type==pygame.KEYDOWN:
 			if event.key==pygame.K_x:
 				carryOn=False
+		car1.moveRight(5)
 
 	keys = pygame.key.get_pressed()
 	if keys[pygame.K_LEFT]:
