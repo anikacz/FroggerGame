@@ -40,22 +40,60 @@ class Frog(pygame.sprite.Sprite):
 		#makes white background transparent
 		self.image.set_colorkey(WHITE)
 		self.rect = self.image.get_rect()
+
+	def moveRight(self,pixels):
+		self.rect.x += pixels
+	def moveLeft(self,pixels):
+		self.rect.x -= pixels
+	def moveUp(self,pixels):
+		self.rect.y -= pixels
+	def moveDown(self,pixels):
+		self.rect.y += pixels
+
+class Car(pygame.sprite.Sprite):
+	def __init__(self,color,width,height):
+		super().__init__()
+		self.image = pygame.Surface([width,height])
+		self.image.fill(WHITE)
+		pygame.draw.rect(self.image,color,[0,0,width,height])
+		#self.image = pygame.image.load("car.png").convert()
+		self.image.set_colorkey(WHITE)
+		self.rect = self.image.get_rect()
+
+#create frog sprite
+frog1 = Frog(RED,20,30)
+frog1.rect.x = 200
+frog1.rect.y = 300
+list_of_sprites.add(frog1)
+
 #Main program Loop
 while not done:
 	# --- Main event loop
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			done = True
+		elif event.type==pygame.KEYDOWN:
+			if event.key==pygame.K_x:
+				carryOn=False
+
+	keys = pygame.key.get_pressed()
+	if keys[pygame.K_LEFT]:
+		frog1.moveLeft(5)
+	if keys[pygame.K_RIGHT]:
+		frog1.moveRight(5)
+	if keys[pygame.K_UP]:
+		frog1.moveUp(5)
+	if keys[pygame.K_DOWN]:
+		frog1.moveDown(5)
+
+	list_of_sprites.update()
+
 	#creates screen and lanes
 	screen.fill(GREEN)
 	pygame.draw.rect(screen, GREY, [0,350,700,75])
 	pygame.draw.rect(screen, GREY, [0,200,700,75])
 	pygame.draw.rect(screen, GREY, [0,50,700,75])
-	#create frog sprite
-	frog1 = Frog(RED,20,30)
-	frog1.rect.x = 200
-	frog1.rect.y = 300
-	list_of_sprites.add(frog1)
+
 
 	#draws all sprites to screen
 	list_of_sprites.draw(screen)
