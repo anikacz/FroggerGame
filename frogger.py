@@ -2,10 +2,9 @@
 #Computing Concepts
 #Frogger Game!
 
-
+import time
 import pygame
 import random
-from random import *
 
 # Define some colors
 BLACK = (0, 0, 0)
@@ -20,6 +19,7 @@ screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Frogger")
 
 list_of_sprites = pygame.sprite.Group()
+car_list = pygame.sprite.Group()
 
 # Loop until the user clicks the close button.
 done = False
@@ -42,16 +42,30 @@ class Frog(pygame.sprite.Sprite):
 		self.rect = self.image.get_rect()
 
 	def moveRight(self,pixels):
-		self.rect.x += pixels
+		if pixels < 700:
+			self.rect.x += pixels
 	def moveLeft(self,pixels):
-		self.rect.x -= pixels
+		if pixels > 0:
+			self.rect.x -= pixels
 	def moveUp(self,pixels):
-		self.rect.y -= pixels
+		if pixels < 500:
+			self.rect.y -= pixels
 	def moveDown(self,pixels):
-		self.rect.y += pixels
+		if pixels > 0:
+			self.rect.y += pixels
+	def handleKeys(self):
+		keys = pygame.key.get_pressed()
+		if keys[pygame.K_LEFT]:
+			frog1.moveLeft(5)
+		if keys[pygame.K_RIGHT]:
+			frog1.moveRight(5)
+		if keys[pygame.K_UP]:
+			frog1.moveUp(5)
+		if keys[pygame.K_DOWN]:
+			frog1.moveDown(5)
 
 class Car(pygame.sprite.Sprite):
-	def __init__(self,color,width,height):
+	def __init__(self,color,width,height,speed):
 		super().__init__()
 		self.image = pygame.Surface([width,height])
 		self.image.fill(WHITE)
@@ -59,10 +73,29 @@ class Car(pygame.sprite.Sprite):
 		#self.image = pygame.image.load("car.png").convert()
 		self.image.set_colorkey(WHITE)
 		self.rect = self.image.get_rect()
+		self.speed = speed
+
 	def moveRight(self,speed):
-		self.rect.x += speed
+		if self.rect.x < 700:
+			self.rect.x += speed
 	def moveLeft(self,speed):
-		self.rect.x -= speed
+		self.rect.x -= pixels
+	def moveForward(self, speed):
+		self.rect.y += self.speed * speed / 20
+	def moveBackward(self, speed):
+		self.rect.y -= self.speed * speed / 20
+	def changeSpeed(self, speed):
+		self.speed = speed
+
+
+
+for i in range(5):
+	carObj = Car(BLACK,40,50,random.randint(50,100))
+	carObj.rect.x = random.randint(0,500)
+	carObj.rect.y = random.randint(0,500)
+	car_list.add(carObj)
+for j in range(0,len(car_list)):
+	carObj.moveRight(5)
 
 #create frog sprite
 frog1 = Frog(RED,20,30)
@@ -70,34 +103,19 @@ frog1.rect.x = 200
 frog1.rect.y = 300
 list_of_sprites.add(frog1)
 
-#create base car sprite
-car1 = Car(BLACK,20,30)
-car1.rect.x = 50
-car1.rect.y = 150
-list_of_sprites.add(car1)
-
 #Main program Loop
-while not done:
+play = True
+while play:
 	# --- Main event loop
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
-			done = True
+			play = False
 		elif event.type==pygame.KEYDOWN:
 			if event.key==pygame.K_x:
-				carryOn=False
-		car1.moveRight(5)
-
-	keys = pygame.key.get_pressed()
-	if keys[pygame.K_LEFT]:
-		frog1.moveLeft(5)
-	if keys[pygame.K_RIGHT]:
-		frog1.moveRight(5)
-	if keys[pygame.K_UP]:
-		frog1.moveUp(5)
-	if keys[pygame.K_DOWN]:
-		frog1.moveDown(5)
+				play = False
 
 	list_of_sprites.update()
+	frog1.handleKeys()
 
 	#creates screen and lanes
 	screen.fill(GREEN)
@@ -108,6 +126,8 @@ while not done:
 
 	#draws all sprites to screen
 	list_of_sprites.draw(screen)
+	car_list.draw(screen)
+
 	# --- Go ahead and update the screen with what we've drawn.
 	pygame.display.flip()
 
