@@ -63,6 +63,11 @@ class Frog(pygame.sprite.Sprite):
 			frog1.moveUp(5)
 		if keys[pygame.K_DOWN]:
 			frog1.moveDown(5)
+	def checkCollision(self,player,car):
+		result = pygame.sprite.groupcollide(player,car,True,False)
+		if len(list_of_sprites) == 0:
+			play = False
+			GameOver()
 
 class Car(pygame.sprite.Sprite):
 	def __init__(self,color,width,height,speed):
@@ -87,7 +92,12 @@ class Car(pygame.sprite.Sprite):
 	def changeSpeed(self, speed):
 		self.speed = speed
 
-
+def GameOver():
+	pygame.font.init()
+	endgame = pygame.font.SysFont("helvetica",50)
+	textsurface = endgame.render("GAME OVER",True,BLACK)
+	screen.blit(textsurface,(100,100))
+	pygame.display.flip()
 
 for i in range(5):
 	carObj = Car(BLACK,40,50,random.randint(50,100))
@@ -113,6 +123,7 @@ while play:
 		elif event.type==pygame.KEYDOWN:
 			if event.key==pygame.K_x:
 				play = False
+		frog1.checkCollision(list_of_sprites,car_list)
 
 	list_of_sprites.update()
 	frog1.handleKeys()
