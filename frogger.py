@@ -55,6 +55,8 @@ class Frog(pygame.sprite.Sprite):
 	def moveUp(self,pixels):
 		if pixels < 500:
 			self.rect.y -= pixels
+		elif self.rect.y == 500:
+			self.resetPos()
 	def moveDown(self,pixels):
 		if pixels > 0:
 			self.rect.y += pixels
@@ -71,13 +73,18 @@ class Frog(pygame.sprite.Sprite):
 	def checkCollision(self,player,car):
 		pygame.sprite.groupcollide(player,car,True,False)
 		if len(list_of_sprites) == 0:
-			newFrog = Frog(RED,20,30)
-			newFrog.resetPos()
-			list_of_sprites.add(newFrog)
-			newFrog.handleKeys()
+			self.resetPos()
+			list_of_sprites.add(self)
 			pygame.display.flip()
 		else:
 			play = True
+	def checkWalls(self):
+		if self.rect.y == 0:
+			self.resetPos()
+			list_of_sprites.add(self)
+			pygame.display.flip()
+			self.score += 1
+			print(self.score)
 	def resetPos(self):
 		self.rect.x = 350
 		self.rect.y = 450
@@ -98,22 +105,10 @@ class Car(pygame.sprite.Sprite):
 	def update(self,speed):
 		if self.rect.x > screen_width:
 			self.reset_pos()
-		'''elif self.rect.x > (screen_width/8):
-			self.carCopy()'''
 		self.rect.x += speed
-
 	'''def carCopy(self):
 		newCar() = self.reset_pos()
 		car_list1.add(newCar)'''
-
-
-def GameOver():
-	pygame.font.init()
-	endgame = pygame.font.SysFont("Calibri",50)
-	textsurface = endgame.render("GAME OVER",True,BLACK)
-	screen.blit(textsurface,(100,100))
-	pygame.display.flip()
-
 
 #create frog sprite
 frog1 = Frog(RED,20,30)
@@ -122,20 +117,23 @@ frog1.rect.y = 450
 list_of_sprites.add(frog1)
 
 #creates lane 1 cars
-car1 = Car(BLACK,40,60)
-car1.rect.x = 0
-car1.rect.y = 59
-car_list1.add(car1)
+for i in range(4):
+	car1 = Car(BLACK,40,60)
+	car1.rect.x = 0
+	car1.rect.y = 59
+	car_list1.add(car1)
 #creates lane 2 cars
-car2 = Car(BLACK,40,60)
-car2.rect.x = 0
-car2.rect.y = 206
-car_list2.add(car2)
+for i in range(4):
+	car2 = Car(BLACK,40,60)
+	car2.rect.x = 0
+	car2.rect.y = 206
+	car_list2.add(car2)
 #creates lane 3 cars
-car3 = Car(BLACK,40,60)
-car3.rect.x = 0
-car3.rect.y = 356
-car_list3.add(car3)
+for i in range(4):
+	car3 = Car(BLACK,40,60)
+	car3.rect.x = 0
+	car3.rect.y = 356
+	car_list3.add(car3)
 
 #Main program Loop
 play = True
@@ -150,6 +148,7 @@ while play:
 	frog1.checkCollision(list_of_sprites,car_list1)
 	frog1.checkCollision(list_of_sprites,car_list2)
 	frog1.checkCollision(list_of_sprites,car_list3)
+	frog1.checkWalls()
 
 	speed1 = random.randrange(10,20)
 	speed2 = random.randrange(10,20)
@@ -162,6 +161,7 @@ while play:
 
 	for froggo in list_of_sprites:
 		froggo.handleKeys()
+		froggo.checkWalls()
 
 	#creates screen and lanes
 	screen.fill(GREEN)
@@ -172,9 +172,12 @@ while play:
 
 	#draws all sprites to screen
 	list_of_sprites.draw(screen)
-	car_list1.draw(screen)
-	car_list2.draw(screen)
-	car_list3.draw(screen)
+	for car in car_list1:
+		car_list1.draw(screen)
+	for car in car_list2:
+		car_list2.draw(screen)
+	for car in car_list3:
+		car_list3.draw(screen)
 
 	# --- Go ahead and update the screen with what we've drawn.
 	pygame.display.flip()
