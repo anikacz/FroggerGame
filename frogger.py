@@ -40,7 +40,7 @@ class Frog(pygame.sprite.Sprite):
 		self.image = pygame.Surface([width,height])
 		self.image.fill(WHITE)
 		pygame.draw.rect(self.image,color,[0,0,width,height])
-		#self.image = pygame.image.load("frog.png").convert()
+		self.image = pygame.image.load("presentation-frog_converted.bmp").convert()
 		#makes white background transparent
 		self.image.set_colorkey(WHITE)
 		self.rect = self.image.get_rect()
@@ -73,6 +73,8 @@ class Frog(pygame.sprite.Sprite):
 	def checkCollision(self,player,car):
 		pygame.sprite.groupcollide(player,car,True,False)
 		if len(list_of_sprites) == 0:
+			pygame.mixer.music.load("beep-03.wav")
+			pygame.mixer.music.play()
 			self.resetPos()
 			list_of_sprites.add(self)
 			pygame.display.flip()
@@ -80,6 +82,8 @@ class Frog(pygame.sprite.Sprite):
 			play = True
 	def checkWalls(self):
 		if self.rect.y == 0:
+			pygame.mixer.music.load("button-4.wav")
+			pygame.mixer.music.play()
 			self.resetPos()
 			list_of_sprites.add(self)
 			pygame.display.flip()
@@ -96,7 +100,7 @@ class Car(pygame.sprite.Sprite):
 		self.image = pygame.Surface([width,height])
 		self.image.fill(WHITE)
 		pygame.draw.rect(self.image,color,[0,0,width,height])
-		#self.image = pygame.image.load("car.png").convert()
+		self.image = pygame.image.load("presentation-car_converted.bmp").convert()
 		self.image.set_colorkey(WHITE)
 		self.rect = self.image.get_rect()
 	def reset_pos(self):
@@ -138,6 +142,7 @@ for i in range(4):
 #Main program Loop
 play = True
 while play:
+	pygame.init()
 	# --- Main event loop
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
