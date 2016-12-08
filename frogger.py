@@ -21,7 +21,9 @@ screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Frogger")
 
 list_of_sprites = pygame.sprite.Group()
-car_list = pygame.sprite.Group()
+car_list1 = pygame.sprite.Group()
+car_list2 = pygame.sprite.Group()
+car_list3 = pygame.sprite.Group()
 
 # Loop until the user clicks the close button.
 done = False
@@ -42,6 +44,7 @@ class Frog(pygame.sprite.Sprite):
 		#makes white background transparent
 		self.image.set_colorkey(WHITE)
 		self.rect = self.image.get_rect()
+		self.score = 0
 
 	def moveRight(self,pixels):
 		if pixels < 700:
@@ -58,17 +61,27 @@ class Frog(pygame.sprite.Sprite):
 	def handleKeys(self):
 		keys = pygame.key.get_pressed()
 		if keys[pygame.K_LEFT]:
-			frog1.moveLeft(5)
+			self.moveLeft(5)
 		if keys[pygame.K_RIGHT]:
-			frog1.moveRight(5)
+			self.moveRight(5)
 		if keys[pygame.K_UP]:
-			frog1.moveUp(5)
+			self.moveUp(5)
 		if keys[pygame.K_DOWN]:
-			frog1.moveDown(5)
+			self.moveDown(5)
 	def checkCollision(self,player,car):
-		result = pygame.sprite.groupcollide(player,car,True,False)
+		pygame.sprite.groupcollide(player,car,True,False)
 		if len(list_of_sprites) == 0:
-			play = False
+			newFrog = Frog(RED,20,30)
+			newFrog.resetPos()
+			list_of_sprites.add(newFrog)
+			newFrog.handleKeys()
+			pygame.display.flip()
+		else:
+			play = True
+	def resetPos(self):
+		self.rect.x = 350
+		self.rect.y = 450
+		self.handleKeys()
 
 class Car(pygame.sprite.Sprite):
 	def __init__(self,color,width,height):
@@ -79,24 +92,19 @@ class Car(pygame.sprite.Sprite):
 		#self.image = pygame.image.load("car.png").convert()
 		self.image.set_colorkey(WHITE)
 		self.rect = self.image.get_rect()
-
-	def moveRight(self,speed):
-		if self.rect.x < 700:
-			self.rect.x += speed
-	def moveLeft(self,speed):
-		self.rect.x -= pixels
-	def moveForward(self, speed):
-		self.rect.y += self.speed * speed / 20
-	def moveBackward(self, speed):
-		self.rect.y -= self.speed * speed / 20
-	def changeSpeed(self, speed):
-		self.speed = speed
 	def reset_pos(self):
-		self.rect.y = 0
-	def update(self):
-		self.rect.x += 5
+		self.rect.x = 0
+		pygame.display.flip()
+	def update(self,speed):
 		if self.rect.x > screen_width:
 			self.reset_pos()
+		'''elif self.rect.x > (screen_width/8):
+			self.carCopy()'''
+		self.rect.x += speed
+
+	'''def carCopy(self):
+		newCar() = self.reset_pos()
+		car_list1.add(newCar)'''
 
 
 def GameOver():
@@ -106,26 +114,28 @@ def GameOver():
 	screen.blit(textsurface,(100,100))
 	pygame.display.flip()
 
+
 #create frog sprite
 frog1 = Frog(RED,20,30)
-frog1.rect.x = 200
-frog1.rect.y = 300
+frog1.rect.x = 350
+frog1.rect.y = 450
 list_of_sprites.add(frog1)
+
 #creates lane 1 cars
 car1 = Car(BLACK,40,60)
 car1.rect.x = 0
 car1.rect.y = 59
-car_list.add(car1)
+car_list1.add(car1)
 #creates lane 2 cars
 car2 = Car(BLACK,40,60)
 car2.rect.x = 0
 car2.rect.y = 206
-car_list.add(car2)
+car_list2.add(car2)
 #creates lane 3 cars
 car3 = Car(BLACK,40,60)
 car3.rect.x = 0
 car3.rect.y = 356
-car_list.add(car3)
+car_list3.add(car3)
 
 #Main program Loop
 play = True
@@ -137,11 +147,22 @@ while play:
 		elif event.type==pygame.KEYDOWN:
 			if event.key==pygame.K_x:
 				play = False
-	frog1.checkCollision(list_of_sprites,car_list)
-	car_list.update()
+	frog1.checkCollision(list_of_sprites,car_list1)
+	frog1.checkCollision(list_of_sprites,car_list2)
+	frog1.checkCollision(list_of_sprites,car_list3)
 
+	speed1 = random.randrange(10,20)
+	speed2 = random.randrange(10,20)
+	speed3 = random.randrange(10,20)
+
+	car_list1.update(speed1)
+	car_list2.update(speed2)
+	car_list3.update(speed3)
 	list_of_sprites.update()
-	frog1.handleKeys()
+
+	for froggo in list_of_sprites:
+		froggo.handleKeys()
+
 	#creates screen and lanes
 	screen.fill(GREEN)
 	pygame.draw.rect(screen, GREY, [0,350,700,75])
@@ -151,7 +172,9 @@ while play:
 
 	#draws all sprites to screen
 	list_of_sprites.draw(screen)
-	car_list.draw(screen)
+	car_list1.draw(screen)
+	car_list2.draw(screen)
+	car_list3.draw(screen)
 
 	# --- Go ahead and update the screen with what we've drawn.
 	pygame.display.flip()
