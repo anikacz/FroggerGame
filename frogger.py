@@ -159,9 +159,9 @@ while play:
 	speed2 = random.randrange(10,20)
 	speed3 = random.randrange(10,20)
 
-	car_list1.update(speed1)
-	car_list2.update(speed2)
-	car_list3.update(speed3)
+	car_list1.update(speed1+(frog1.score*3))
+	car_list2.update(speed2+(frog1.score*3))
+	car_list3.update(speed3+(frog1.score*3))
 	list_of_sprites.update()
 
 	for froggo in list_of_sprites:
